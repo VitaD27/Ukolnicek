@@ -1,86 +1,194 @@
-import React, {Component} from 'react';
-import {DayPilot, DayPilotCalendar, DayPilotNavigator} from "daypilot-pro-react";
-import "./CalendarStyles.css";
+import * as React from 'react';
+import Paper from '@material-ui/core/Paper';
+import FormGroup from '@material-ui/core/FormGroup';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Typography from '@material-ui/core/FormControl';
+import { makeStyles } from '@material-ui/core/styles';
+import { ViewState, EditingState, IntegratedEditing } from '@devexpress/dx-react-scheduler';
+import {
+  Scheduler,
+  WeekView,
+  Toolbar,
+  DateNavigator,
+  TodayButton,
+  ViewSwitcher,
+  MonthView,
+  DayView,
+  Appointments,
+  AppointmentForm,
+  AppointmentTooltip,
+  DragDropProvider,
+} from '@devexpress/dx-react-scheduler-material-ui';
 
-const styles = {
-  left: {
-    float: "left",
-    width: "220px"
+import { appointments } from "views/Calendar/data/appointments";
+
+const useStyles = makeStyles(theme => ({
+  container: {
+    margin: theme.spacing(2),
+    padding: theme.spacing(2),
   },
-  main: {
-    marginLeft: "220px"
-  }
-};
+  text: theme.typography.h6,
+  formControlLabel: {
+    ...theme.typography.caption,
+    fontSize: '1rem',
+  },
+}));
 
-class Calendar extends Component {
+const currentDate = new Date();
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      viewType: "Week",
-      durationBarVisible: false,
-      timeRangeSelectedHandling: "Enabled",
-      onTimeRangeSelected: args => {
-        let dp = this.calendar;
-        DayPilot.Modal.prompt("Vytvořit událost:", "Událost 1").then(function(modal) {
-          dp.clearSelection();
-          if (!modal.result) { return; }
-          dp.events.add(new DayPilot.Event({
-            start: args.start,
-            end: args.end,
-            id: DayPilot.guid(),
-            text: modal.result
-          }));
-        });
-      },
-      eventDeleteHandling: "Update",
-      onEventClick: args => {
-        let dp = this.calendar;
-        DayPilot.Modal.prompt("Změnit událost:", args.e.text()).then(function(modal) {
-          if (!modal.result) { return; }
-          args.e.data.text = modal.result;
-          dp.events.update(args.e);
-        });
-      },
-    };
-  }
+/*const editingOptionsList = [
+  { id: 'allowAdding', text: 'Adding' },
+  { id: 'allowDeleting', text: 'Deleting' },
+  { id: 'allowUpdating', text: 'Updating' },
+  { id: 'allowResizing', text: 'Resizing' },
+  { id: 'allowDragging', text: 'Dragging' },
+];*/
 
-  componentDidMount() {
-
-    // load event data
-    this.setState({
-      startDate: "2020-03-01",
-      events: []
-    });
-  }
-
-  render() {
-    var {...config} = this.state;
-    return (
-      <div>
-        <div style={styles.left}>
-          <DayPilotNavigator
-            selectMode={"week"}
-            showMonths={3}
-            skipMonths={3}
-            onTimeRangeSelected={ args => {
-              this.setState({
-                startDate: args.day
-              });
-            }}
+/*const EditingOptionsSelector = ({
+  options, onOptionsChange,
+}) => {
+  const classes = useStyles();
+  return (
+    <div className={classes.container}>
+      <Typography className={classes.text}>
+        Enabled Options
+      </Typography>
+      <FormGroup row>
+        {editingOptionsList.map(({ id, text }) => (
+          <FormControlLabel
+            control={(
+              <Checkbox
+                checked={options[id]}
+                onChange={onOptionsChange}
+                value={id}
+                color="primary"
+              />
+            )}
+            classes={{ label: classes.formControlLabel }}
+            label={text}
+            key={id}
+            disabled={(id === 'allowDragging' || id === 'allowResizing') && !options.allowUpdating}
           />
-        </div>
-        <div style={styles.main}>
-        <DayPilotCalendar
-          {...config}
-          ref={component => {
-            this.calendar = component && component.control;
-          }}
-        />
-        </div>
-      </div>
-    );
-  }
-}
+        ))}
+      </FormGroup>
+    </div>
+  );
+};*/
 
-export default Calendar;
+export default () => {
+  const [data, setData, currentDate] = React.useState(appointments);
+  const [editingOptions, setEditingOptions] = React.useState({
+    allowAdding: true,
+    allowDeleting: true,
+    allowUpdating: true,
+    allowDragging: true,
+    allowResizing: true,
+  });
+  const [addedAppointment, setAddedAppointment] = React.useState({});
+  const [isAppointmentBeingCreated, setIsAppointmentBeingCreated] = React.useState(false);
+
+  const {
+    allowAdding, allowDeleting, allowUpdating, allowResizing, allowDragging,
+  } = editingOptions;
+
+  const onCommitChanges = React.useCallback(({ added, changed, deleted }) => {
+    if (added) {
+      const startingAddedId = data.length > 0 ? data[data.length - 1].id + 1 : 0;
+      setData([...data, { id: startingAddedId, ...added }]);
+    }
+    if (changed) {
+      setData(data.map(appointment => (
+        changed[appointment.id] ? { ...appointment, ...changed[appointment.id] } : appointment)));
+    }
+    if (deleted !== undefined) {
+      setData(data.filter(appointment => appointment.id !== deleted));
+    }
+    setIsAppointmentBeingCreated(false);
+  }, [setData, setIsAppointmentBeingCreated, data]);
+  const onAddedAppointmentChange = React.useCallback((appointment) => {
+    setAddedAppointment(appointment);
+    setIsAppointmentBeingCreated(true);
+  });
+  const handleEditingOptionsChange = React.useCallback(({ target }) => {
+    const { value } = target;
+    const { [value]: checked } = editingOptions;
+    setEditingOptions({
+      ...editingOptions,
+      [value]: !checked,
+    });
+  });
+
+  const TimeTableCell = React.useCallback(React.memo(({ onDoubleClick, ...restProps }) => (
+    <WeekView.TimeTableCell
+      {...restProps}
+      onDoubleClick={allowAdding ? onDoubleClick : undefined}
+    />
+  )), [allowAdding]);
+
+  const CommandButton = React.useCallback(({ id, ...restProps }) => {
+    if (id === 'deleteButton') {
+      return <AppointmentForm.CommandButton id={id} {...restProps} disabled={!allowDeleting} />;
+    }
+    return <AppointmentForm.CommandButton id={id} {...restProps} />;
+  }, [allowDeleting]);
+
+  const allowDrag = React.useCallback(
+    () => allowDragging && allowUpdating,
+    [allowDragging, allowUpdating],
+  );
+  const allowResize = React.useCallback(
+    () => allowResizing && allowUpdating,
+    [allowResizing, allowUpdating],
+  );
+
+  return (
+    <React.Fragment>
+      
+      <Paper>
+        <Scheduler
+          data={data}
+          height={700}
+        >
+          <ViewState
+            currentDate={currentDate}
+          />
+          <EditingState
+            onCommitChanges={onCommitChanges}
+
+            addedAppointment={addedAppointment}
+            onAddedAppointmentChange={onAddedAppointmentChange}
+          />
+
+          <IntegratedEditing />
+          
+          <MonthView />
+          <WeekView />
+          <DayView />
+
+          <Toolbar />
+
+          <ViewSwitcher />
+
+          <DateNavigator />
+          <TodayButton />
+
+          <Appointments />
+
+          <AppointmentTooltip
+            showOpenButton
+            showDeleteButton={allowDeleting}
+          />
+          <AppointmentForm
+            commandButtonComponent={CommandButton}
+            readOnly={isAppointmentBeingCreated ? false : !allowUpdating}
+          />
+          <DragDropProvider
+            allowDrag={allowDrag}
+            allowResize={allowResize}
+          />
+        </Scheduler>
+      </Paper>
+    </React.Fragment>
+  );
+};

@@ -42,8 +42,8 @@ import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
-import Zoom from '@material-ui/core/Zoom';
-import Fab from '@material-ui/core/Fab';
+//import Zoom from '@material-ui/core/Zoom';
+//import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import EditIcon from '@material-ui/icons/Edit';
 import UpIcon from '@material-ui/icons/KeyboardArrowUp';
@@ -98,9 +98,12 @@ function a11yProps(index) {
 const useStyles = makeStyles(theme => ({
   root: {
     backgroundColor: theme.palette.background.paper,
-    width: 1580,
+    //width: 1580,
+    //position: 'relative',
+    //minHeight: 850,
+    width: "100%",
     position: 'relative',
-    minHeight: 850,
+    height: styles.addTaskHeight
   },
   fab: {
     position: 'absolute',
@@ -274,21 +277,6 @@ export default function DatabaseTasks() {
           </GridItem>
         </TabPanel>
       </SwipeableViews>
-      {fabs.map((fab, index) => (
-        <Zoom
-          key={fab.color}
-          in={value === index}
-          timeout={transitionDuration}
-          style={{
-            transitionDelay: `${value === index ? transitionDuration.exit : 0}ms`,
-          }}
-          unmountOnExit
-        >
-          <Fab aria-label={fab.label} className={fab.className} color={fab.color}>
-            {fab.icon}
-          </Fab>
-        </Zoom>
-      ))}
     </div>
   );
 }

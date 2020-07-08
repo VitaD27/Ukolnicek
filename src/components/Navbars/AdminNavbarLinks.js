@@ -13,7 +13,7 @@ import Divider from "@material-ui/core/Divider";
 // @material-ui/icons
 import Person from "@material-ui/icons/Person";
 import Notifications from "@material-ui/icons/Notifications";
-import Dashboard from "@material-ui/icons/Dashboard";
+//import Dashboard from "@material-ui/icons/Dashboard";
 import Search from "@material-ui/icons/Search";
 import HomeIcon from '@material-ui/icons/Home';
 // core components
@@ -21,6 +21,13 @@ import CustomInput from "components/CustomInput/CustomInput.js";
 import Button from "components/CustomButtons/Button.js";
 
 import Link from '@material-ui/core/Link';
+
+import Profile from "views/Profile";
+import Setting from "views/Setting";
+
+import Dashboard from "views/Dashboard/Dashboard.js";
+
+//import Login from "views/Login/Login.js";
 
 import styles from "assets/jss/material-dashboard-react/components/headerLinksStyle.js";
 
@@ -51,6 +58,33 @@ export default function AdminNavbarLinks() {
     setOpenProfile(null);
   };
   const preventDefault = event => event.preventDefault();
+
+  // Firebase odhlášení
+ /* state = {}
+  
+  validateBeforeSubmit = () => {
+      var state = this.state;
+      var prosloVse = true;
+      return prosloVse;
+    }
+  
+  LogOut = () => {
+  
+    if (!this.validateBeforeSubmit()) {
+        return;
+    }
+  
+    new firebaseHelper().doSignOut()
+      .then(function(result) {
+        //Zapise do console usera
+        console.log(result.user);
+        alert('Odhlášeno!')
+      }).catch((error)=> {
+        console.log(error);
+        alert(error);
+      })
+  }*/
+
   return (
     <div>
       <div className={classes.searchWrapper}>
@@ -76,9 +110,13 @@ export default function AdminNavbarLinks() {
         aria-label="Home"
         className={classes.buttonLink}
       >
-        <HomeIcon className={classes.icons} />
+        <Link href="/admin/dashboard" Component={Dashboard} onclick={Dashboard} className={classes.linkText}>
+          <HomeIcon className={classes.icons} />
+        </Link>
         <Hidden mdUp implementation="css">
-          <p className={classes.linkText}>Home</p>
+          <p onClick={handleCloseNotification} className={classes.linkText}>
+            Home
+          </p>
         </Hidden>
       </Button>
       <div className={classes.manager}>
@@ -92,7 +130,7 @@ export default function AdminNavbarLinks() {
           className={classes.buttonLink}
         >
           <Notifications className={classes.icons} />
-          
+          <span className={classes.notifications}>1</span>
           <Hidden mdUp implementation="css">
             <p onClick={handleCloseNotification} className={classes.linkText}>
               Notification
@@ -122,6 +160,12 @@ export default function AdminNavbarLinks() {
               <Paper>
                 <ClickAwayListener onClickAway={handleCloseNotification}>
                   <MenuList role="menu">
+                    <MenuItem
+                        onClick={handleCloseNotification}
+                        className={classes.dropdownItem}
+                    >
+                      Mike John responded to your email
+                    </MenuItem>
                   </MenuList>
                 </ClickAwayListener>
               </Paper>
@@ -167,7 +211,7 @@ export default function AdminNavbarLinks() {
               <Paper>
                 <ClickAwayListener onClickAway={handleCloseProfile}>
                   <MenuList role="menu">
-                    <Link href="/profile" onClick={preventDefault}>
+                    <Link href="/admin/myprofile" onClick={Profile}>
                       <MenuItem
                         onClick={handleCloseProfile}
                         className={classes.dropdownItem}
@@ -175,7 +219,7 @@ export default function AdminNavbarLinks() {
                         Profil
                       </MenuItem>
                     </Link>
-                    <Link href="/setting" onClick={preventDefault}>
+                    <Link href="/admin/setting" onClick={Setting}>
                       <MenuItem
                         onClick={handleCloseProfile}
                         className={classes.dropdownItem}
@@ -184,9 +228,9 @@ export default function AdminNavbarLinks() {
                       </MenuItem>
                       <Divider light />
                     </Link>
-                    <Link href="#" onClick={preventDefault}>
+                    <Link href="/login">
                       <MenuItem
-                        onClick={handleCloseProfile}
+                        onClick={handleCloseProfile}  // zde se klepne na odhlášení uživatelé
                         className={classes.dropdownItem}
                       >
                         Odhlásit

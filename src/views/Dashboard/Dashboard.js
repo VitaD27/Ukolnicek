@@ -63,7 +63,7 @@ export default function Dashboard() {
       <GridContainer>
         <GridItem xs={12} sm={12} md={4}>
           <Card chart>
-            <Link href="/addtask" Component={AddTask} onClick={preventDefault}>
+            <Link href="/admin/addtask" Component={AddTask} onClick={AddTask}>
               <CardHeader color="success">            
                 <br />
                 <br />
@@ -77,7 +77,7 @@ export default function Dashboard() {
         </GridItem>
         <GridItem xs={12} sm={12} md={4}>
           <Card chart>
-            <Link href="/databasetasks" Component={DatabaseTasks} onClick={preventDefault}>
+            <Link href="/admin/databasetasks" Component={DatabaseTasks} onClick={DatabaseTasks}>
               <CardHeader color="warning">
                 <br />
                 <br />
@@ -91,7 +91,7 @@ export default function Dashboard() {
         </GridItem>
         <GridItem xs={12} sm={12} md={4}>
           <Card chart>
-            <Link href="/calendar" Component={Calendar} onClick={preventDefault}>
+            <Link href="/admin/calendar" Component={Calendar} onClick={Calendar}>
               <CardHeader color="danger">
                 <br />
                 <br />

@@ -96,9 +96,12 @@ function a11yProps(index) {
 const useStyles = makeStyles(theme => ({
   root: {
     backgroundColor: theme.palette.background.paper,
-    width: 800,
+    width: "100%",
+    //width: theme.spacing(80),
+    //height: theme.spacing(80)
     position: 'relative',
-    minHeight: 600,
+    //minHeight: 600,
+    height: styles.addTaskHeight 
   },
   fab: {
     position: 'absolute',
@@ -121,11 +124,9 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-//const useStyles = makeStyles(styles);
-
 export default function AddTask() {
   const classes = useStyles();
-  //const preventDefault = event => event.preventDefault();
+  const preventDefault = event => event.preventDefault();
 
   const theme = useTheme();
   const [value, setValue] = React.useState(0);
@@ -142,8 +143,6 @@ export default function AddTask() {
     enter: theme.transitions.duration.enteringScreen,
     exit: theme.transitions.duration.leavingScreen,
   };
-
-  const preventDefault = event => event.preventDefault();
 
   const fabs = [
     {
@@ -195,7 +194,7 @@ export default function AddTask() {
             label="Datum do" 
             type="date" 
             variant="outlined"
-            defaultValue="2020-02-30" 
+            defaultValue="2020-04-30" 
             className={classes.textField}
             InputLabelProps={{ 
               shrink: true, 
