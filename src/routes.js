@@ -42,14 +42,26 @@ import StorageIcon from '@material-ui/icons/Storage';
 import PlaylistAddIcon from '@material-ui/icons/PlaylistAdd';
 import PersonIcon from '@material-ui/icons/Person';
 import SettingsIcon from '@material-ui/icons/Settings';
+import EditIcon from '@material-ui/icons/Edit';
 
 import Calendar from "views/Calendar/Calendar";
 import DatabaseTasks from "views/DatabaseTasks/DatabaseTasks";
 import AddTask from "views/AddTask/AddTask";
 import Profile from "views/Profile";
+import MyProfile from "views/MyProfile";
 import Setting from "views/Setting";
+import Edit from "views/Edit";
+
+import Avatar  from '@material-ui/core/Avatar';
 
 const dashboardRoutes = [
+  /*{
+    path: "/profile",
+    name: "Profile",
+    icon: <Avatar className={classes.large}>VD</Avatar>
+    component: Profile,
+    layout: "/admin"
+  },*/
   {
     path: "/dashboard",
     name: "Home",
@@ -83,11 +95,19 @@ const dashboardRoutes = [
     layout: "/admin"
   },
   {
-    path: "/profile",
+    path: "/myprofile",
     name: "Profil",
     //rtlName: "ملف تعريفي للمستخدم",
     icon: PersonIcon,
-    component: Profile,
+    component: MyProfile,
+    layout: "/admin"
+  },
+  {
+    path: "/edit",
+    name: "Edit",
+    //rtlName: "ملف تعريفي للمستخدم",
+    icon: EditIcon,
+    component: Edit,
     layout: "/admin"
   },
   {

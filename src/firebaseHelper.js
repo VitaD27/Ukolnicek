@@ -27,8 +27,8 @@ export default class firebaseHelper {
     _auth;
 
     /** Vytvori uzivatele se jmenem a heslem */
-    doCreateUserWithEmailAndPassword = (firstName, lastName, email, password, passwordCheck) => {
-        return this._auth.createUserWithEmailAndPassword(firstName, lastName, email, password, passwordCheck);
+    doCreateUserWithEmailAndPassword = (email, password) => {
+        return this._auth.createUserWithEmailAndPassword(email, password);
     }
 
     /** Prihlasi uzivatele emailem a heslem */
